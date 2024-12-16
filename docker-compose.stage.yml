@@ -1,0 +1,53 @@
+version: "3.7"
+
+
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - '/var/run/docker.sock:/tmp/docker.sock:ro'
+      - './shared/nginx/vhost.d:/etc/nginx/vhost.d'
+      - './shared/nginx/proxy.conf:/etc/nginx/proxy.conf'
+      - './shared/nginx/certs:/etc/nginx/certs:ro'
+      - './shared/nginx/conf.d/custom.conf:/etc/nginx/conf.d/custom.conf:ro'
+      - '/usr/share/nginx/html'
+    networks:
+      proxy: null
+      webnetwork: 
+        aliases:
+          - oriolix.local
+    restart: unless-stopped
+  web-app:
+    environment:
+      VIRTUAL_HOST: oriolix.local
+      SmtpSettings__FromEmail: ${smtpFromEmail?err}
+      SmtpSettings__FromName: ${smtpFromName?err}
+      SmtpSettings__DeliveryMethod: ${smtpDeliveryMethod?err}
+      SmtpSettings__Host: ${smtpHost?err}
+      SmtpSettings__Port: ${smtpPort:-587}
+      SmtpSettings__Credentials__UserName: ${smtpUserName?err}
+      SmtpSettings__Credentials__Password: ${smtpPassword?err}
+    ports:
+      - "80"
+    networks:
+      webnetwork:
+        aliases:
+          - oriolix.local
+    restart: unless-stopped
+  mariadb:
+    ports:
+      - "3306"
+    restart: unless-stopped
+  clamav-server:
+    restart: unless-stopped
+    
+    
+networks:
+  proxy:
+    driver: bridge
+  webnetwork:
+    driver: bridge

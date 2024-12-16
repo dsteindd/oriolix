@@ -1,0 +1,35 @@
+version: "3.7"
+
+
+services:
+  web-app:
+    environment:
+      VIRTUAL_HOST: oriolix.davidst.de,oriolix.com, oriolix.org
+      LETSENCRYPT_HOST: oriolix.davidst.de, oriolix.com, oriolix.org
+      LETSENCRYPT_EMAIL: support@oriolix.davidst.de
+      SmtpSettings__FromEmail: ${smtpFromEmail?err}
+      SmtpSettings__FromName: ${smtpFromName?err}
+      SmtpSettings__DeliveryMethod: Network
+      SmtpSettings__Host: ${smtpHost?err}
+      SmtpSettings__Port: ${smtpPort:-587}
+      SmtpSettings__Credentials__UserName: ${smtpUserName?err}
+      SmtpSettings__Credentials__Password: ${smtpPassword?err}
+    ports:
+      - "80"
+    restart: always
+  mariadb:
+    ports:
+      - "3306"
+    restart: always
+  clamav-server:
+    restart: always
+  rabbit-mq:
+    restart: always
+  processor:
+    restart: always
+       
+networks:
+  nginx-proxy:
+    external: true
+  webnetwork:
+    driver: bridge

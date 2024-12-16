@@ -1,0 +1,130 @@
+version: "3.7"
+
+
+services:
+  processor:
+    container_name: python-processor
+    image: processor:1.0
+    build:
+      context: ./src/python-worker
+      dockerfile: ./Dockerfile
+    entrypoint: sh -c "/wait && python3 -u consumer.py"
+    environment:
+      RABBITMQ_HOST: event-queue
+      RABBITMQ_USER: $rabbitUser
+      RABBITMQ_PWD: $rabbitPwd
+      MARIADB_HOST: mariadb
+      MARIADB_USER: $appUser
+      MARIADB_PWD: $appUserPassword
+      AUDIO_BASE_DIR: uploads
+      NETWORK_BASE_DIR: uploads/networks
+      WAIT_HOSTS: event-queue:5672
+      WAIT_HOSTS_TIMEOUT: 120
+      WAIT_SLEEP_INTERVALL: 10
+      WAIT_HOST_CONNECT_TIMEOUT: 10
+    depends_on:
+      - rabbit-mq
+      - mariadb
+    networks:
+      - webnetwork
+    volumes:
+      - "${PWD}/uploads:/app/uploads"
+    restart: unless-stopped
+  rabbit-mq:
+    image: rabbitmq:3-management
+    ports:
+      - "8080:15672"
+      - "5672"
+    container_name: event-queue
+    hostname: event-queue
+    environment:
+      RABBITMQ_DEFAULT_USER: $rabbitUser
+      RABBITMQ_DEFAULT_PASS: $rabbitPwd
+    networks:
+      webnetwork:
+        aliases:
+          - event-queue
+    volumes:
+      - "${PWD}/rabbit-mq-data:/var/lib/rabbitmq/mnesia/"
+      - "${PWD}/rabbit-mq-logs:/var/log/rabbitmq/mnesia"
+    restart: unless-stopped
+  web-app:
+    image: annotation-app:1.0
+    build:
+      context: ./src/AnnotationService
+      dockerfile: ./WebApp.API/Dockerfile
+    entrypoint: sh -c "/wait && dotnet WebApp.API.dll"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_HOSTINGSTARTUPASSEMBLIES: Microsoft.AspNetCore.SpaProxy
+      AdminConfiguration__Mail: $adminMail
+      AdminConfiguration__Password: $adminPassword
+      IdentityServer__Key__Type: Development
+      ConnectionStrings__DefaultConnection: 'server=mariadb;Database=AnnotationDb;user=$appUser;
+            password=$appUserPassword'
+      FileSystemSettings__PathPrefix: 'uploads'
+      ClamAVConfiguration__Server: 'clamav-server'
+      ClamAVConfiguration__Port: 3310
+      IdentityServerConfiguration__CertPassword: $is4certPassword
+      DataProtectionConfiguration__CertPassword: $dataProtectionCertPassword
+      RabbitMQSettings__EventBusUserName: $rabbitUser
+      RabbitMQSettings__EventBusPassword: $rabbitPwd
+      RabbitMQSettings__EventBusConnection: event-queue
+      RabbitMQSettings__EventBusRetryCount: 5
+      RabbitMQSettings__SubscriptionClientName: Annotations
+      WAIT_HOSTS: mariadb:3306, clamav-server:3310, event-queue:5672
+      WAIT_HOSTS_TIMEOUT: 120
+      WAIT_SLEEP_INTERVALL: 10
+      WAIT_HOST_CONNECT_TIMEOUT: 10
+    networks:
+      - nginx-proxy
+      - webnetwork
+    depends_on:
+      - mariadb
+      - rabbit-mq
+    volumes:
+      - "${PWD}/uploads:/app/uploads"
+      - "${PWD}/logs:/app/logs"
+      - "${PWD}/temp-keys:/app/temp-keys"
+      - "${PWD}/certs/data-protection-cert.pfx:/app/certs/data-protection-cert.pfx"
+      - "${PWD}/certs/identity-server-cert.pfx:/app/certs/identity-server-cert.pfx"
+    container_name: annotation-app
+    restart: unless-stopped
+  mariadb:
+    image: mariadb:10.5
+    environment:
+      MYSQL_ROOT_PASSWORD: $mariaRootPassword
+      MYSQL_DATABASE: AnnotationDb
+      MYSQL_USER: $appUser
+      MYSQL_PASSWORD: $appUserPassword
+    networks:
+      webnetwork:
+        aliases:
+          - mariadb
+    volumes:
+      - "${PWD}/mariadb-data:/var/lib/mysql"
+    container_name: annotation-db
+    restart: unless-stopped
+  clamav-server:
+    image: mkodockx/docker-clamav:alpine
+    ports:
+      - "3310"
+    volumes:
+      - "clamav:/var/lib/clamav:rw"
+    networks:
+      webnetwork:
+        aliases:
+          - clamav-server
+    container_name: clamav-scanner
+    
+networks:
+  webnetwork:
+    driver: bridge
+  nginx-proxy:
+    external: true 
+    name: nginx-proxy  
+
+
+volumes:
+  clamav:
+    null

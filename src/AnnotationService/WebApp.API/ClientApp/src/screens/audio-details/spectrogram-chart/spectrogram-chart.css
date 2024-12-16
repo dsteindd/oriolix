@@ -1,0 +1,121 @@
+.vertical {
+    transform-origin: 50% 50%;
+    transform: rotateZ(270deg);
+}
+
+input[type="range"] {
+    margin: 16px
+}
+
+.spec-container {
+    display: flex;
+    flex-direction: column;
+    height: 400px;
+}
+
+.canvas-container {
+    display: flex;
+    height: 300px;
+}
+
+.canvas-item {
+    flex: 1;
+}
+
+.frequency-display-container {
+    background: grey;
+    width: 10ex;
+    height: 100%;
+}
+
+
+.time-frequency-value-display {
+    display: flex;
+    flex-direction: row;
+    margin: 16px;
+}
+
+.time-frequency-value-display > * {
+    display: flex;
+    flex: 1;
+}
+
+.canvas-coords {
+    position: relative;
+}
+
+.time-left {
+    position: absolute;
+    left: 0;
+    text-align: left;
+}
+
+.time-right {
+    position: absolute;
+    right: 0;
+    text-align: right;
+}
+
+.mouse-over-time {
+    position: absolute;
+    left: 25%;
+    right: 25%;
+    text-align: center;
+}
+
+.grid {
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: 1fr 20px;
+    grid-template-rows: 80px 1fr 20px;
+
+}
+
+.time-range-cell {
+    display: flex
+}
+.menu-bar-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.menu-bar-cell > * {
+    flex: 1;
+}
+
+.time-range-cell {
+    position: relative;
+}
+
+.time-range-min {
+    position: absolute;
+    left: 0;
+}
+
+.time-range-mouseover {
+    position: absolute;
+    left: 25%;
+    right: 25%;
+    text-align: center;
+}
+
+.time-range-max {
+    position: absolute;
+    right: 0;
+}
+
+.frequency-range-cell {
+    position: relative;
+}
+
+.frequency-range-min {
+    position: absolute;
+    bottom: 0;
+}
+
+.frequency-range-max {
+    position: absolute;
+    top: 0;
+}

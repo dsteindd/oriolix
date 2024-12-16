@@ -1,0 +1,38 @@
+.scroller {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    flex-flow: row;
+    align-items: stretch;
+    margin-bottom: 15px;
+}
+
+.scroller ::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scroller ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    margin-top: 6px;
+    margin-bottom: 2px;
+    border-radius: 4px;
+}
+
+.scroller ::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.scroller ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.scrollList {
+    display: flex;
+    justify-content: start;
+    flex-flow: column nowrap;
+    align-items: stretch;
+    flex: 1;
+    height: 500px;
+    overflow-y: scroll;
+}

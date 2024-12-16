@@ -1,0 +1,21 @@
+version: "3.7"
+
+
+services:
+  web-app:
+    environment:
+      SmtpSettings__FromEmail: ${smtpFromEmail?err}
+      SmtpSettings__FromName: ${smtpFromName:-}
+      SmtpSettings__DeliveryMethod: ${smtpDeliveryMethod:-SpecifiedPickupDirectory}
+      SmtpSettings__PickupDirectoryLocation: ${smtpPickupDirectoryLocation:-mails}
+      SmtpSettings__Host: ${smtpHost:-localhost}
+      SmtpSettings__Port: ${smtpPort:-587}
+      SmtpSettings__Credentials__UserName: ${smtpUserName:-}
+      SmtpSettings__Credentials__Password: ${smtpPassword:-}
+    volumes:
+      - "${PWD}/${smtpPickupDirectoryLocation}:/app/${smtpPickupDirectoryLocation}"
+    ports:
+      - "5000:80"
+  mariadb:
+    ports:
+      - "3307:3306"

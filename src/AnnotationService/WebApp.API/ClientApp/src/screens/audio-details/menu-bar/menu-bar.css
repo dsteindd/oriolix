@@ -1,0 +1,15 @@
+.menu-bar {
+    display: flex;
+    flex-flow: row;
+    align-items: stretch;
+    justify-content: center;
+}
+
+.threshold-slider {
+    display: flex;
+    flex: 0.5;
+}
+
+.threshold-slider-text {
+    padding-left: 20px;
+}

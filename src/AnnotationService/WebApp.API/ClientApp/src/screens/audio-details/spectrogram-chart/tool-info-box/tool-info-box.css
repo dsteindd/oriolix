@@ -1,0 +1,16 @@
+
+.tool-box {
+    display: flex;
+    flex-flow: row;
+    padding: 6px;
+    margin: 4px;
+    border: 1px solid grey;
+    border-radius: 10px;
+    justify-content: center;
+    align-items: center;
+    width: 140px;
+}
+
+.tool-box * {
+    flex: 1;
+}

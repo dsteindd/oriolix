@@ -1,0 +1,10 @@
+librosa
+numpy
+Pillow
+soundfile
+tensorflow
+asyncio
+mariadb
+aio-pika
+noisereduce
+audioread
