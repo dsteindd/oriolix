@@ -1,7 +1,7 @@
 # Annotation Service
 
 ## Important Note
-This README is not up-to-date, and the architecture does not conform to what is written here.
+This README is not up-to-date, and the architecture does not conform to what is written here. There is some code refactoring to be done. I will work on these issues, once I have got time.
 
 ## Requirements
 
